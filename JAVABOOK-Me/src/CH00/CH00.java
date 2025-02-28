@@ -1,28 +1,13 @@
 package CH00; // 패키지 구별 코드
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import org.w3c.dom.css.RGBColor;
 
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.RenderingHints.Key;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.Console;
-import java.lang.constant.Constable;
-import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
@@ -30,9 +15,7 @@ import java.util.TimerTask;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JTextField;
 
 public class CH00 extends JFrame {
     public CH00() {
@@ -43,10 +26,10 @@ public class CH00 extends JFrame {
         contentPane.setLayout(null);
         
         final int BUTTONSIZE = 40; // 타일 크기
-        final int ROW = 9; // 타일 배열  - 가로		초급 - 9 9 10 // 중급 - 16 16 40 // 고급 - 30 16 99 
-        final int COLUMN = 9; // 타일 배열 - 세로
+        final int ROW = 30; // 타일 배열  - 가로		초급 - 9 9 10 // 중급 - 16 16 40 // 고급 - 30 16 99 
+        final int COLUMN = 16; // 타일 배열 - 세로
         final int TILECOUNT = ROW*COLUMN; // 타일 갯수
-        final int BOOMCOUNT = 10; // 지뢰갯수
+        final int BOOMCOUNT = 99; // 지뢰갯수
         final int[] REMAINCOUNT = {TILECOUNT,BOOMCOUNT}; // [0]: 남은 타일 [1] : 남은폭탄
         final int[] SECOND = {0,0}; // [0] : 초 단위 [1] : 타이머 활성화 상태 
         
@@ -131,8 +114,8 @@ public class CH00 extends JFrame {
 					       		
 					        }
 				        }
-						// 오른쪽 클릭
-						if (e.getButton() == MouseEvent.BUTTON3) {
+						// 오른쪽 클릭 - 지뢰 위치 확정
+						if (e.getButton() == MouseEvent.BUTTON3 && !clickButton.getBackground().equals(Color.WHITE)) {
 							if (!clickButton.isBackgroundSet() && REMAINCOUNT[1] != 0) {
 								clickButton.setBackground(Color.CYAN);
 								label2.setText(String.valueOf(--REMAINCOUNT[1]));
@@ -140,15 +123,70 @@ public class CH00 extends JFrame {
 								clickButton.setBackground(null);
 								label2.setText(String.valueOf(++REMAINCOUNT[1]));
 							}
+							// 확정 지뢰 위치 체크
+							if(REMAINCOUNT[1] == 0) {
+								int count = 0;
+								for(int i = 0; i<TILECOUNT; i++) {
+									if(btn[i].getBackground().equals(Color.CYAN) && boom[i] == 1) {
+										count++;
+									}
+								}
+								//모두 맞을 시
+								if(count == BOOMCOUNT) {
+									timer.cancel();
+									switch(JOptionPane.showConfirmDialog(null, "승리       "+label3.getText()+ "\n다시?", null, JOptionPane.YES_NO_OPTION)) {
+										case 0:
+											dispose();
+											main(new String[0]);
+											break;
+										default:
+											System.exit(0);
+									}
+								}
+							}
+						// 중간 클릭 - 지뢰 확정 후 남은 타일 열기
+	                    } else if(e.getButton() == MouseEvent.BUTTON2){
+	                    	if(!(btn[clickValue].getText() == "")) {
+	                    		int count = 0;
+		                    	// 주변 확정한 지뢰 갯수 체크
+		                		for(int i=0; i<aroundBoomData.length; i++) {
+		                			if(btn[aroundBoomData[i]].getBackground().equals(Color.CYAN) && aroundBoomData[i] != clickValue) {
+		                				count++;
+		                				// 지뢰 찾기 실패
+		                				if(!(boom[aroundBoomData[i]]==1)) {
+		                					timer.cancel();
+		    								clickButton.setText(null);
+		    								btn[aroundBoomData[i]].setBackground(Color.RED);
+		    								switch(JOptionPane.showConfirmDialog(null, "실패\n다시?", null, JOptionPane.YES_NO_OPTION)) {
+		    								case 0:
+		    									dispose();
+		    									main(new String[0]);
+		    									break;
+		    								default:
+		    									System.exit(0);
+		    								}
+		                				}
+		                			}
+		                		}
+		                		if(count == Integer.parseInt(btn[clickValue].getText())) {
+		                			// 지뢰를 찾았을 경우
+		                			for(int i=0; i<aroundBoomData.length; i++) {
+			                			if(!btn[aroundBoomData[i]].isBackgroundSet()) {
+			                				int[] aroundBoomData2 = selectAroundTiles(aroundBoomData[i], ROW, COLUMN);
+			                				TileOpen(aroundBoomData2,aroundBoomData[i],boom,btn,tileListeners,ROW,COLUMN,REMAINCOUNT);
+			                			}
+			                		}
+		                		}
+	                    	}
 	                    }
 						// 왼쪽클릭
 						else {
-							// 오른쪽 클릭한 타일을 열때
-	                    	if(clickButton.isBackgroundSet()) {
+							// 지뢰로 확정한 타일을 열때
+	                    	if(clickButton.isBackgroundSet() && !clickButton.isBackgroundSet()) {
 	                    		label2.setText(String.valueOf(++REMAINCOUNT[1]));
 	                    	}
 	                    	// 주변 타일 지뢰 갯수값 계산
-	                    	TileOpen(aroundBoomData,boom,btn,tileListeners,ROW,COLUMN,REMAINCOUNT);
+	                    	TileOpen(aroundBoomData,clickValue,boom,btn,tileListeners,ROW,COLUMN,REMAINCOUNT);
 							
 							// 지뢰 클릭 시
 							if(boom[clickValue] == 1) {
@@ -164,27 +202,28 @@ public class CH00 extends JFrame {
 									System.exit(0);
 								}
 							}
-							REMAINCOUNT[0] = 0;
-							for (int i= 0; i<TILECOUNT; i++) {
-								if(!btn[i].isBackgroundSet()) {
-									REMAINCOUNT[0]++;
-								}
-							}
-							System.out.println(REMAINCOUNT[0]);
-							
-							// 모든 타일 오픈(승리)
-							if(REMAINCOUNT[0] == 0) {
-								timer.cancel();
-								switch(JOptionPane.showConfirmDialog(null, "승리\n다시?", null, JOptionPane.YES_NO_OPTION)) {
-									case 0:
-										dispose();
-										main(new String[0]);
-										break;
-									default:
-										System.exit(0);
-								}
-							}
 	                    }
+						// 남은 타일 체크
+						REMAINCOUNT[0] = 0;
+						for (int i= 0; i<TILECOUNT; i++) {
+							if(!btn[i].isBackgroundSet()) {
+								REMAINCOUNT[0]++;
+							}
+						}
+						// 확정 지뢰 갯수
+						int chk = BOOMCOUNT - REMAINCOUNT[1];
+						// 모든 타일 오픈(승리)
+						if(REMAINCOUNT[0] == 0 || (REMAINCOUNT[0] + chk) == BOOMCOUNT) {
+							timer.cancel();
+							switch(JOptionPane.showConfirmDialog(null, "승리       "+label3.getText()+ "\n다시?", null, JOptionPane.YES_NO_OPTION)) {
+								case 0:
+									dispose();
+									main(new String[0]);
+									break;
+								default:
+									System.exit(0);
+							}
+						}
 					}
 				};
 				btn[btnIndex].addMouseListener(tileListeners[btnIndex]);
@@ -195,7 +234,7 @@ public class CH00 extends JFrame {
         setVisible(true);
         
     }
-    public static void TileOpen(int[] aroundBoomData, int[] boom, JButton[] btn,MouseAdapter[] tileListeners, int row, int column, int[] REMAINCOUNT) {
+    public static void TileOpen(int[] aroundBoomData,int clickValue, int[] boom, JButton[] btn,MouseAdapter[] tileListeners, int row, int column, int[] REMAINCOUNT) {
     	int count = 0;
 		for(int i=0; i<aroundBoomData.length; i++) {
 			if(boom[aroundBoomData[i]] == 1) {
@@ -203,27 +242,27 @@ public class CH00 extends JFrame {
 			}
 		}
 		if (count == 0) {
-	        btn[aroundBoomData[3] + 1].setText("");
+	        btn[clickValue].setText("");
+	        btn[clickValue].setBackground(Color.WHITE);
 
 	        // 주변 타일을 하나씩 처리
 	        for (int i = 0; i < aroundBoomData.length; i++) {
-	        	btn[aroundBoomData[i]].removeMouseListener(tileListeners[aroundBoomData[i]]);
-	        	
-	            if (!btn[aroundBoomData[i]].isBackgroundSet() && btn[aroundBoomData[i]].getText() == "") {  // 타일이 열려 있지 않으면
-	            	btn[aroundBoomData[i]].setBackground(Color.WHITE);
-	                // 주변 타일의 상태를 확인하고 재귀적으로 열기
-	                if (boom[aroundBoomData[i]] == 0) {
-	                    int[] aroundBoomData2 = selectAroundTiles(aroundBoomData[i], row, column);
-	                    TileOpen(aroundBoomData2, boom, btn, tileListeners, row, column, REMAINCOUNT);
-	                } else {
-	                    btn[aroundBoomData[i]].setText(String.valueOf(count));
-	                }
-	            }
+	        	if(clickValue != aroundBoomData[i]){
+	        		if (!btn[aroundBoomData[i]].isBackgroundSet() && btn[aroundBoomData[i]].getText() == "") {  // 타일이 열려 있지 않으면
+		            	btn[aroundBoomData[i]].setBackground(Color.WHITE);
+		                // 주변 타일의 상태를 확인하고 재귀적으로 열기
+		                if (boom[aroundBoomData[i]] == 0) {
+		                    int[] aroundBoomData2 = selectAroundTiles(aroundBoomData[i], row, column);
+		                    TileOpen(aroundBoomData2,aroundBoomData[i], boom, btn, tileListeners, row, column, REMAINCOUNT);
+		                } else {
+		                    btn[aroundBoomData[i]].setText(String.valueOf(count));
+		                }
+		            }
+	        	}
 	        }
 	    } else {
-	    	btn[aroundBoomData[3] + 1].setBackground(Color.WHITE);
-	        btn[aroundBoomData[3] + 1].setText(String.valueOf(count));
-	        btn[aroundBoomData[3] + 1].removeMouseListener(tileListeners[aroundBoomData[3] + 1]);
+	    	btn[clickValue].setBackground(Color.WHITE);
+	        btn[clickValue].setText(String.valueOf(count));
 	    }
     }
     
