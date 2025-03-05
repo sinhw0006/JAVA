@@ -1,4 +1,4 @@
-package CH7;
+package CH07;
 
 import java.awt.datatransfer.SystemFlavorMap;
 import java.util.Scanner;
