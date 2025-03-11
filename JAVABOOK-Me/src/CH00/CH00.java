@@ -182,8 +182,9 @@ public class CH00 extends JFrame {
 						// 왼쪽클릭
 						else {
 							// 지뢰로 확정한 타일을 열때
-	                    	if(clickButton.isBackgroundSet() && !clickButton.isBackgroundSet()) {
+	                    	if(clickButton.isBackgroundSet() && !clickButton.getBackground().equals(Color.WHITE)) {
 	                    		label2.setText(String.valueOf(++REMAINCOUNT[1]));
+	                    		
 	                    	}
 	                    	// 주변 타일 지뢰 갯수값 계산
 	                    	TileOpen(aroundBoomData,clickValue,boom,btn,tileListeners,ROW,COLUMN,REMAINCOUNT);

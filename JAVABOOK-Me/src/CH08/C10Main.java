@@ -25,8 +25,8 @@ class Buyer{
 	}
 	
 	public void payment(Seller seller, int money) {
-		//내 보유금액에서 차감
-		// seller에 money를 전달 리턴되는 사과 개수를 누적
+		this.myMoney -= money;
+		this.appleCnt = seller.receive(money);
 	}
 }
 
@@ -47,6 +47,8 @@ class Seller{
 	
 	public int receive(int money) {
 		//구매자로부터 전달 받은 money를 내 보유금액에 누적
+		this.myMoney += money;
+		this.appleCnt -= money/price;
 		//전달받은금액 / 사과개수를 리턴
 		return money/price; 
 	}
