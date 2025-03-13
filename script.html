@@ -7,19 +7,29 @@
   </head>
   <body>
     <script>
+      //createCounter 함수 정의
       function createCounter() {
+        // count라는 변수를 선언하고 초기값을 0으로 설정
         let count = 0;
-
+        //increment 함수 정의(클로저 역할)
         function increment() {
+          // count에 값을 +1 하고 반환
           return ++count;
         }
+        // createCounter가 호출 되면 increment함수의 주소값을 반환
+        //반환 된 increment는 createCounter의 내부함수로써 count 변수에 접근 가능
         return increment;
       }
-
+      //counter에 createCounter의 리턴 값인 increment 주소값 저장
       const counter = createCounter();
+      //counter() -> createCounter내의 increment 호출 count값 1증가. 결과 1
       console.log(counter());
+      //counter() -> createCounter내의 increment 호출 count값 1증가. 결과 2
       console.log(counter());
+      //counter() -> createCounter내의 increment 호출 count값 1증가. 결과 3
       console.log(counter());
+      //값이 증가하는 이유는 const counter = createCounter(); 에서
+      // 저장된 increment가 count 변수를 참조하기 때문
     </script>
   </body>
 </html>
