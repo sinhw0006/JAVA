@@ -9,7 +9,9 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,6 +33,8 @@ class C08GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 	JTextField txt1;
 	JTextArea area1;
 	JScrollPane scroll1;
+	
+	Writer out;
 
 	// Frame
 	public C08GUI(String name, String title) {
@@ -100,35 +104,46 @@ class C08GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 		if (e.getSource() == btn1) {
 			System.err.println("파일로 저장");
 			String contents = area1.getText();
-			
+
 			JFileChooser fileChooser = new JFileChooser();
-			
+
 			String dirPath = "C:\\정처산기A 공유\\IOTEST\\";
-			
+
 			fileChooser.setDialogTitle("파일 저장 위치를 선택하세요");
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			
+
 			File defaultDirPath = new File(dirPath);
-			if(defaultDirPath.exists()) fileChooser.setCurrentDirectory(defaultDirPath);
-			
+			if (defaultDirPath.exists())
+				fileChooser.setCurrentDirectory(defaultDirPath);
+
 			int selectedVal = fileChooser.showSaveDialog(null);
 			System.out.println("selectedVal : " + selectedVal);
-			
-			if(selectedVal == JFileChooser.APPROVE_OPTION) {
+
+			if (selectedVal == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fileChooser.getSelectedFile();
 				System.out.println("selectedFile : " + selectedFile);
-				if(selectedFile.)
-			}
-			
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-			String filename = LocalDateTime.now().format(formatter);
-			try {
-				FileWriter out = new FileWriter(dirPath+filename+".txt");
-				out.write(contents);
-				out.flush();
-				out.close();
-			} catch (Exception e2) {
+
+				// 파일확장자 추가
+				String filePath = selectedFile.toString();
+				if (!selectedFile.toString().endsWith(".txt")) {
+					filePath = selectedFile.toString() + ".txt";
+				}
+				System.out.println("filePath : " + filePath);
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+				String filename = LocalDateTime.now().format(formatter);
+				try {
+					out = new FileWriter(dirPath + filename + ".txt");
+					out.write(contents);
+					out.flush();
+					out.close();
+				} catch(Exception e1) {
+					e1.printStackTrace();
 				
+				}finally {
+					try {out.close();} catch (IOException e1) {e1.printStackTrace();}
+				}
+
 			}
 		} else if (e.getSource() == btn2) {
 			System.err.println("1대1 요청");
@@ -175,7 +190,7 @@ class C08GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 			int startOffset = area1.getLineStartOffset(row);
 			int endOffset = area1.getLineEndOffset(row);
 //			System.out.printf("MouseClicked offset...row : %d startOffset : %d endOffset : %d\n",row,startOffset,endOffset);
-			String str = area1.getText(startOffset, endOffset-startOffset);
+			String str = area1.getText(startOffset, endOffset - startOffset);
 			System.out.println(str);
 		} catch (BadLocationException e1) {
 			// TODO Auto-generated catch block
