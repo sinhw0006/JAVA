@@ -1,5 +1,6 @@
 package CH21;
 
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -28,8 +30,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 
 class Memo {
@@ -76,36 +80,119 @@ class Memo {
 		return "Memo [id=" + id + ", text=" + text + ", createdAt=" + createdAt + "]";
 	}
 }
-class C07SELECTGUI extends JFrame {
-	JButton[] btn;
-	
-	public C07SELECTGUI(List<Memo> memos){
-		memos.size();
-		final int MARGIN = 10;
-		setBounds(400, 100, 500, 500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// Panel
-		JPanel panel = new JPanel();
+class SelectFrame extends JFrame implements MouseListener, ActionListener {
+	C07GUI mainUi;
+	JTable table;
+	JScrollPane scroll;
+	JPanel panel;
+	JButton btn1;
+	String selectedText;
+
+	public SelectFrame(C07GUI mainUi) {
+		super("SELECT 창");
+		this.mainUi = mainUi;
+		setBounds(100, 100, 500, 500);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		// panel
+		panel = new JPanel();
 		panel.setLayout(null);
 
-		// Component
-		btn = new JButton[memos.size()];
+		btn1 = new JButton("선택");
+		btn1.setBounds(415, 20, 60, 50);
+		btn1.addActionListener(this);
+		
+		panel.add(btn1);
 
-		// event listener add
-//		btn[0].addActionListener(this);
-
-		// Panel(Component)
-		panel.add(btn[0]);
-
-		// Frame(Panel)
 		add(panel);
 
 		// Frame
 		setResizable(false);
-		setVisible(true);
+		setVisible(false);
 	}
-	
+
+	void select(Connection conn, PreparedStatement pstmt, ResultSet rs) {
+		if (scroll !=null) {
+			panel.remove(scroll);
+		}
+		try {
+			
+			pstmt = conn.prepareStatement("SELECT * FROM tbl_memo");
+			List<String[]> data = new ArrayList();
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				data.add(new String[] { rs.getString("id"), rs.getString("text"), rs.getString("createdAt") });
+			}
+
+			String[] header = { "ID", "TEXT", "CREATED_AT" };
+
+			String[][] arr = new String[data.size()][];
+
+			// for 값복사
+			for (int i = 0; i < data.size(); i++) {
+				arr[i] = data.get(i);
+			}
+
+			table = new JTable(arr, header);
+			table.addMouseListener(this);
+
+			scroll = new JScrollPane(table);
+			scroll.setBounds(10, 10, 400, 440);
+
+			panel.add(scroll);
+
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int selectedRow = table.getSelectedRow();
+		selectedText = table.getValueAt(selectedRow, 1).toString();
+//		System.out.println(selectedText);
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==btn1) {
+			mainUi.area1.setText(selectedText);
+		}
+
+	}
 }
 
 class C07GUI extends JFrame implements ActionListener, KeyListener, MouseListener {
@@ -119,6 +206,9 @@ class C07GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 	JTextField txt1;
 	JTextArea area1;
 	JScrollPane scroll1;
+
+	// SELECT FRAME
+	SelectFrame selectFrame;
 
 	Writer out;
 
@@ -216,6 +306,9 @@ class C07GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 		System.out.println("Driver Loading Success...");
 		conn = DriverManager.getConnection(url, id, pw);
 		System.out.println("DB CONNECTED...");
+
+		// SELECT FRAME
+		selectFrame = new SelectFrame(this);
 	}
 
 	@Override
@@ -295,35 +388,9 @@ class C07GUI extends JFrame implements ActionListener, KeyListener, MouseListene
 		} else if (e.getSource() == btn5) {
 			System.err.println("DELETE");
 		} else if (e.getSource() == btn6) {
-			System.err.println("SELECT");
-			try {
-				pstmt = conn.prepareStatement("SELECT * FROM tbl_memo");
-				List<Memo> list = new ArrayList<Memo>();
-				Memo memo;
-				rs = pstmt.executeQuery();
-				while (rs.next()) {
-//					System.out.printf("%s작성일 : %s\n==========\n", rs.getString("text"), rs.getTimestamp("createdAt"));
-					memo = new Memo();
-					memo.setId(rs.getInt("id"));
-					memo.setText(rs.getString("text"));
-					Timestamp timestamp = rs.getTimestamp("createdAt");
-					memo.setCreatedAt(timestamp.toLocalDateTime());
-					list.add(memo);
-				}
-				list.forEach(System.out::println);
-				new C07SELECTGUI(list);
-				
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} finally {
-				try {
-					rs.close();
-					pstmt.close();					
-				} catch (Exception e2) {
-					e2.printStackTrace();
-				}
-			}
+			selectFrame.select(conn, pstmt, rs);
+			selectFrame.setVisible(true);
+
 		} else if (e.getSource() == input) {
 			String message = txt1.getText();
 			area1.append(message + "\n");
