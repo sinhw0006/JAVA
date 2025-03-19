@@ -12,7 +12,7 @@ public class C01DBConn {
 		//DB CONN DATA
 		String id = "root";
 		String pw = "1234";
-		String url = "jdbc:mysql://localhost:3306/testdb";
+		String url = "jdbc:mysql://localhost:3306/test2db";
 		
 		//JDBC참조변수
 		Connection conn = null;
