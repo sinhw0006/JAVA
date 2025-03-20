@@ -26,10 +26,16 @@ public class 문제2 {
 		rs.close();
 	}
 
-	public static void conn() throws ClassNotFoundException, SQLException {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		conn = DriverManager.getConnection(url, id, pw);
-		System.out.println("DB연결 성공");
+	public static void conn() throws ClassNotFoundException {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			System.out.println("Driver Loding Success");
+			conn = DriverManager.getConnection(url, id, pw);
+			System.out.println("DB연결 성공");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("DB연결 실패");
+		}
 	}
 
 	public static List<BookDTO> selectAll() throws Exception {
@@ -63,6 +69,8 @@ public class 문제2 {
 		pstmt.setString(3, bookDTO.getPublisher());
 		pstmt.setString(4, bookDTO.getIsbn());
 		int result = pstmt.executeUpdate();
+		if(result != 0) System.out.println(bookDTO.getBookCode()+"BookCode INSERT 성공");
+		else System.out.println("INSERT 실패");
 		freeConnection(pstmt);
 		return result;
 	}

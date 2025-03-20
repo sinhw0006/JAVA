@@ -80,8 +80,11 @@ public class 문제1 {
 					int no = sc.nextInt();
 					if (no == 1)
 						sort(true);
-					else
+					else if (no == 2)
 						sort(false);
+					else {
+						System.err.println("1 또는 2 를 입력해주세요.");
+						break;}
 					break;
 				case 3:
 					if(isValue()) break;
