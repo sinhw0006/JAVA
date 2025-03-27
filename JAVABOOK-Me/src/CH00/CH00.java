@@ -7,6 +7,7 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.ColorModel;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -264,6 +265,34 @@ public class CH00 extends JFrame {
 	    } else {
 	    	btn[clickValue].setBackground(Color.WHITE);
 	        btn[clickValue].setText(String.valueOf(count));
+	        Font font = new Font("Dialog",Font.BOLD, 10);
+	        btn[clickValue].setFont(font);
+	        switch (count) {
+			case 1: 
+				btn[clickValue].setForeground(Color.cyan);
+				break;
+			case 2: 
+				btn[clickValue].setForeground(Color.green);
+				break;
+			case 3: 
+				btn[clickValue].setForeground(Color.red);
+				break;
+			case 4: 
+				btn[clickValue].setForeground(Color.blue);
+				break;
+			case 5: 
+				btn[clickValue].setForeground(Color.orange);
+				break;
+			case 6: 
+				btn[clickValue].setForeground(Color.magenta);
+				break;
+			case 7: 
+				btn[clickValue].setForeground(Color.gray);
+				break;
+			case 8: 
+				btn[clickValue].setForeground(Color.black);
+				break;
+	        }
 	    }
     }
     
