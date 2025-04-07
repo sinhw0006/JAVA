@@ -7,12 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>JOIN</h1>
-<form action="./join.jsp">
-<input type="text" name="userid"><br>
-<input type="text" name="addr"><br>
-<input type="password" name="password"><br>
-<button>회원가입</button>
-</form>
+
 </body>
 </html>

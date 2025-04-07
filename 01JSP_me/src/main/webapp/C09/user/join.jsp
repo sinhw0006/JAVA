@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="C09.DBUtils"%>
-<%@ page import="C04.UserDto"%>
+<%@ page import="C09.UserDto"%>
 
 <%
 String userid = request.getParameter("userid");
+String addr = request.getParameter("addr");
 String password = request.getParameter("password");
 String role = "ROLE_USER";
 
@@ -12,7 +13,7 @@ String role = "ROLE_USER";
 
 //서비스 실행
 DBUtils db = DBUtils.getInstance();
-int result = db.insertUser(new UserDto(userid,password,role));
+int result = db.insertUser(new UserDto(userid,addr,password,role));
 
 if(result>0){
 %>
