@@ -79,7 +79,7 @@ text-align: center;
 		<%@ include file="/layouts/Nav.jsp"%>
 		<main>
 			<section>
-			<h2>홈</h2>
+			<h2>강사매출현황</h2>
 			</section>
 		</main>
 		<%@ include file="/layouts/Footer.jsp"%>

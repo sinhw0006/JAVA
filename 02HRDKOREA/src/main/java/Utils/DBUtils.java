@@ -31,6 +31,19 @@ public class DBUtils {
 		}
 		return instance;
 	}
+	
+	public int insertVote(VoteDTO voteDTO) throws Exception {
+		pstmt = conn.prepareStatement("insert into tbl_vote_202005 Values(?,?,?,?,?,?)");
+		pstmt.setString(1, voteDTO.getV_jumin());
+		pstmt.setString(2, voteDTO.getV_name());
+		pstmt.setString(3, voteDTO.getM_no());
+		pstmt.setString(4, voteDTO.getV_time());
+		pstmt.setString(5, voteDTO.getV_area());
+		pstmt.setString(6, voteDTO.getV_confirm());
+		int result =  pstmt.executeUpdate();
+		pstmt.close();
+		return result;
+	}
 
 	public List<MemberDTO> selectAllMember() throws Exception {
 		pstmt = conn.prepareStatement("select m_no,m_name,p_name,p_school,m_jumin,m_city,p_tel1,p_tel2,p_tel3"
@@ -64,6 +77,40 @@ public class DBUtils {
 			memberDTO.setP_tel2(rs.getString("p_tel2"));
 			memberDTO.setP_tel3(rs.getString("p_tel3"));
 			list.add(memberDTO);
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
+	public List<VoteDTO> selectAllVote() throws Exception {
+		pstmt = conn.prepareStatement("select * from tbl_vote_202005");
+		rs = pstmt.executeQuery();
+		List<VoteDTO> list = new ArrayList<VoteDTO>();
+		while (rs.next()) {
+			VoteDTO voteDTO = new VoteDTO();
+			voteDTO.setV_jumin(rs.getString(1));
+			voteDTO.setV_name(rs.getString(2));
+			voteDTO.setM_no(rs.getString(3));
+			voteDTO.setV_time(rs.getString(4));
+			voteDTO.setV_area(rs.getString(5));
+			voteDTO.setV_confirm(rs.getString(6));
+			list.add(voteDTO);
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
+	
+	public List<CountVoteDTO> CountVote() throws Exception {
+		pstmt = conn.prepareStatement("select m_no,m_name,count(*) from tbl_member_202005 natural join tbl_vote_202005 where v_confirm = 'Y' group by m_no,m_name order by count(m_no) desc");
+		rs = pstmt.executeQuery();
+		List<CountVoteDTO> list = new ArrayList<CountVoteDTO>();
+		while (rs.next()) {
+			CountVoteDTO countVoteDTO = new CountVoteDTO();
+			countVoteDTO.setM_no(rs.getString(1));
+			countVoteDTO.setV_name(rs.getString(2));
+			countVoteDTO.setCount(rs.getString(3));
+			list.add(countVoteDTO);
 		}
 		rs.close();
 		pstmt.close();

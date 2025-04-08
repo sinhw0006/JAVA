@@ -1,3 +1,6 @@
+<%@page import="Utils.DBUtils"%>
+<%@page import="java.util.List"%>
+<%@page import="Utils.CountVoteDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -61,7 +64,7 @@ table {
 	margin: 0 auto;
 }
 
-td {
+th,td {
 	border: 1px solid;
 	padding: 5px;
 }
@@ -77,6 +80,29 @@ text-align: center;
 		<main>
 			<section>
 			<h2>후보자 등수</h2>
+			<table>
+						<thead>
+							<tr>
+								<th>후보번호</th>
+								<th>성명</th>
+								<th>총투표건수</th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+							List<CountVoteDTO> list = DBUtils.getInstance().CountVote();
+							for (CountVoteDTO countVoteDTO : list) {
+							%>
+							<tr>
+								<td><%=countVoteDTO.getM_no()%></td>
+								<td><%=countVoteDTO.getV_name()%></td>
+								<td><%=countVoteDTO.getCount()%></td>
+							</tr>
+							<%
+							}
+							%>
+						</tbody>
+					</table>
 			</section>
 		</main>
 		<%@ include file="/layouts/Footer.jsp"%>
