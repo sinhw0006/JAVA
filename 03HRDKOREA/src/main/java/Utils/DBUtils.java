@@ -85,4 +85,66 @@ public class DBUtils {
 		pstmt.close();
 		return list;
 	}
+	
+	public int classinsert(classDTO classDTO, String class_name) throws Exception{
+		String sql = "insert into tbl_class_202201"
+				+ " values(?,?,?,?,"
+				+ "(select teacher_code from tbl_teacher_202201 where class_name = ?))";
+		pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1,classDTO.getRegist_month());
+		pstmt.setString(2,classDTO.getC_no());
+		pstmt.setString(3,classDTO.getClass_area());
+		pstmt.setInt(4,classDTO.getTuition());
+		pstmt.setString(5,class_name);
+		int result = pstmt.executeUpdate();
+		pstmt.close();
+		return result;
+	}
+	
+	public List<memberinfoDTO> memberInfoSelect() throws Exception{
+		String sql = "select regist_month,c_no,c_name,class_name,class_area,tuition,grade"
+				+ " from tbl_member_202201"
+				+ " natural join ("
+				+ "select regist_month,c_no,class_area,tuition,class_name"
+				+ " from tbl_class_202201 natural join tbl_teacher_202201)";
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		List<memberinfoDTO> list = new ArrayList();
+		while(rs.next()) {
+			memberinfoDTO memberinfoDTO = new memberinfoDTO();
+			memberinfoDTO.setRegist_month(rs.getString(1));
+			memberinfoDTO.setC_no(rs.getString(2));
+			memberinfoDTO.setC_name(rs.getString(3));
+			memberinfoDTO.setClass_name(rs.getString(4));
+			memberinfoDTO.setClass_area(rs.getString(5));
+			memberinfoDTO.setTuition(rs.getInt(6));
+			memberinfoDTO.setGrade(rs.getString(7));
+			list.add(memberinfoDTO);
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
+	
+	public List<teacherInfoDTO> teacherInfoSelect() throws Exception{
+		String sql = "SELECT teacher_code,class_name,teacher_name,SUM(tuition)"
+				+ " FROM tbl_class_202201"
+				+ " NATURAL JOIN tbl_teacher_202201"
+				+ " GROUP BY teacher_code, class_name, teacher_name"
+				+ " ORDER BY teacher_code";
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		List<teacherInfoDTO> list = new ArrayList();
+		while(rs.next()) {
+			teacherInfoDTO teacherInfoDTO = new teacherInfoDTO();
+			teacherInfoDTO.setTeacher_code(rs.getString(1));
+			teacherInfoDTO.setClass_name(rs.getString(2));
+			teacherInfoDTO.setTeacher_name(rs.getString(3));
+			teacherInfoDTO.setSum(rs.getInt(4));
+			list.add(teacherInfoDTO);
+		}
+		rs.close();
+		pstmt.close();
+		return list;
+	}
 }

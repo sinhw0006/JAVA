@@ -90,7 +90,7 @@ input[type="text"], select {
 		<main>
 			<section>
 				<h2>수강신청</h2>
-				<form name="form" action="">
+				<form name="form" action="./create.jsp" onsubmit="return isValid()">
 					<table>
 						<tbody>
 							<tr>
@@ -137,12 +137,12 @@ input[type="text"], select {
 							</tr>
 							<tr>
 								<th>수강료</th>
-								<td><input type="text" name="class_price" readonly>원</td>
+								<td><input type="text" name="tuition" readonly>원</td>
 							</tr>
 							<tr>
 								<th colspan="2">
 									<button>수강신청</button>
-									<button type="reset">다시쓰기</button>
+									<button type="reset" onclick="resetinput()">다시쓰기</button>
 								</th>
 							</tr>
 						</tbody>
@@ -154,30 +154,68 @@ input[type="text"], select {
 	</div>
 
 	<script type="text/javascript">
-	var member = new Map();
-	var teacher = new Map();
-	<%for (memberDTO memberDTO : list) {%>
+	    var member = new Map();
+	    var teacher = new Map();
+	    <%for (memberDTO memberDTO : list) {%>
 		member.set("<%=memberDTO.getC_name()%>","<%=memberDTO.getC_no()%>");
 		<%}%>
-	<%for (teacherDTO teacherDTO : list2) {%>
-	teacher.set("<%=teacherDTO.getClass_name()%>",<%=teacherDTO.getClass_price()%>);
+	    <%for (teacherDTO teacherDTO : list2) {%>
+	    teacher.set("<%=teacherDTO.getClass_name()%>",<%=teacherDTO.getClass_price()%>);
 		<%}%>
-		var form = document.form;
+		const form = document.form;
 		form.c_name.addEventListener('change',(e)=>{
-			var select = e.target.value;
+			let select = e.target.value;
 			form.c_no.value = member.get(select);
-			form.class_price.value = null;
+			form.tuition.value = null;
 			form.class_name.value = null;
 		});
 		
 		form.class_name.addEventListener('change',(e)=>{
-			var select = e.target.value;
+			let select = e.target.value;
 			if(parseInt(form.c_no.value) >= 20000){
-                form.class_price.value = teacher.get(select) / 2;
+                form.tuition.value = teacher.get(select) / 2;
             } else {
-            	form.class_price.value = teacher.get(select);
+            	form.tuition.value = teacher.get(select);
             }
 		});
+		function isValid() {
+			if (form.regist_month.value === "") {
+				alert("수강월이 입력되지 않았습니다!");
+				form.regist_month.focus();
+				return false;
+			}
+			if (form.c_name.value === "") {
+				alert("회원명이 입력되지 않았습니다!");
+				form.c_name.focus();
+				return false;
+			}
+			if (form.c_no.value === "") {
+				alert("회원번호가 입력되지 않았습니다!");
+				form.c_no.focus();
+				return false;
+			}
+			if (form.class_area.value === "") {
+				alert("강의장소가 입력되지 않았습니다!");
+				form.class_area.focus();
+				return false;
+			}
+			if (form.class_name.value === "") {
+				alert("강의명이 입력되지 않았습니다!");
+				form.class_name.focus();
+				return false;
+			}
+			if (form.tuition.value === "") {
+				alert("수강료가 입력되지 않았습니다!");
+				form.tuition.focus();
+				return false;
+			}
+			return true;
+		}
+		function resetinput() {
+            console.log("test");
+			alert("모든 정보를 지우고 처음부터 다시 입력합니다!");
+			form.regist_month.focus();
+		}
 	</script>
 </body>
 </html>
