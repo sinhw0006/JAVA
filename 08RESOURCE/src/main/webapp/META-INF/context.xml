@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
+	<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+
+	<Resource 
+	driverClassName="com.mysql.cj.jdbc.Driver"
+	url="jdbc:mysql://localhost:3306/bookdb"
+	name="jdbc/MyDB"
+	username="root"
+	password="1234"
+	type="javax.sql.DataSource"
+	auth="Container"
+	maxActive="10"
+	maxIdle="2"
+	maxWaitMillis="10000"	
+	/>
+</Context>

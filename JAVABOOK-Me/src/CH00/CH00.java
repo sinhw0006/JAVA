@@ -19,7 +19,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 
 public class CH00 extends JFrame {
+	
+	private static int clickCount = 0;
+	
     public CH00() {
+    	clickCount = 0;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         setResizable(false);
         
@@ -46,6 +50,11 @@ public class CH00 extends JFrame {
         JLabel label3 = new JLabel();
         label3.setBounds(BUTTONSIZE*(ROW/2)+60, 5, 100, 30);
         contentPane.add(label3);
+        
+        // 클릭 횟수 라벨
+        JLabel label4 = new JLabel("클릿 횟수 : 0");
+        label4.setBounds(BUTTONSIZE*(ROW/2)+150, 5, 100, 30);
+        contentPane.add(label4);
         
         
         // 객체들
@@ -115,6 +124,7 @@ public class CH00 extends JFrame {
 					       		
 					        }
 				        }
+						label4.setText("클릿 횟수 : " + (++clickCount));
 						// 오른쪽 클릭 - 지뢰 위치 확정
 						if (e.getButton() == MouseEvent.BUTTON3 && !clickButton.getBackground().equals(Color.WHITE)) {
 							if (!clickButton.isBackgroundSet() && REMAINCOUNT[1] != 0) {
