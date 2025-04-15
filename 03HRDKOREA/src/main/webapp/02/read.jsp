@@ -1,7 +1,6 @@
 <%@page import="java.time.Period"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.time.LocalDate"%>
-<%@page import="Utils.VoteDTO"%>
 <%@page import="Utils.DBUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
