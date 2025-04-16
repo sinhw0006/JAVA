@@ -19,7 +19,7 @@
 			<%@include file="/resources/layouts/nav.jsp" %>
 		</header>
 		<main  class="layout">
-				<h1>TEMPLATE</h1>
+				<h1>ADMIN</h1>
 		</main>
 		
 		
