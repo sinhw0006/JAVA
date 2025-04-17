@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.hamcrest.core.Is;
+
 import Controller.SubController;
 import Domain.Dto.BookDto;
 import Domain.Dto.UserDto;
@@ -35,32 +37,42 @@ public class BookListController implements SubController {
 			if (session.getAttribute("input") == null) {
 				session.setAttribute("sortBy", "bookName");
 				session.setAttribute("orderBy", "ASC");
+				session.setAttribute("type", "bookName");
 				session.setAttribute("input", "");
 			}
 
-			int pages = req.getParameter("page") != null ? Integer.parseInt(req.getParameter("page")) : 1;
+			String page = req.getParameter("page") != null ? req.getParameter("page") : "1";
+			if (page.isEmpty()) {
+				page = "1";
+			}
+			int pages = Integer.parseInt(page);
+			
 			String sortBy = req.getParameter("sortBy") != null ? (String) req.getParameter("sortBy")
 					: (String) session.getAttribute("sortBy");
 			String orderBy = req.getParameter("orderBy") != null ? (String) req.getParameter("orderBy")
 					: (String) session.getAttribute("orderBy");
+			String type = req.getParameter("type") != null ? (String) req.getParameter("type")
+					: (String) session.getAttribute("type");
 			String input = req.getParameter("input") != null ? (String) req.getParameter("input")
 					: (String) session.getAttribute("input");
 			
 			session.setAttribute("sortBy", sortBy);
 			session.setAttribute("orderBy", orderBy);
+			session.setAttribute("type", type);
 			session.setAttribute("input", input);
 
-			int bookCount = bookService.bookCount(input);
+			int bookCount = bookService.bookCount(input,type);
 
 			int pageCount = (int) Math.ceil(bookCount / 10.0);
 			if (pages > pageCount)
 				pages = pageCount;
 			if (pages <= 0)
 				pages = 1;
-			List<BookDto> list = bookService.bookPaging(pages, sortBy, orderBy, input);
+			List<BookDto> list = bookService.bookPaging(pages, sortBy, orderBy, type ,input);
 			req.setAttribute("bookCount", bookCount);
 			req.setAttribute("pageCount", pageCount);
 			req.setAttribute("books", list);
+			req.setAttribute("page", pages);
 			req.getRequestDispatcher("/WEB-INF/view/book/list.jsp").forward(req, resp);
 			return;
 

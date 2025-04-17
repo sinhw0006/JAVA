@@ -10,19 +10,17 @@ import Domain.Dto.UserDto;
 public interface BookDao {
 
 	int insert(BookDto bookDto) throws Exception;
-
-	int update(UserDto userDto) throws SQLException;
-
-	int delete(UserDto userDto) throws SQLException;
+	
+	int update(BookDto BookDto) throws Exception;
+	
+	int delete(String bookCode) throws Exception;
 	//단건조회
-
-	UserDto select(UserDto userDto);
+	
+	BookDto select(String bookCode) throws Exception;
 	//다건조회
-
-	List<UserDto> selectAll();
 	
-	int bookCount(String input) throws Exception;
+	int bookCount(String input, String type) throws Exception;
 	
-	List<BookDto> selectAllBookPage(int pageNum, String sortBy, String orderBy, String input) throws Exception;
+	List<BookDto> selectAllBookPage(int pageNum, String sortBy, String orderBy,String type, String input) throws Exception;
 
 }

@@ -69,35 +69,12 @@ public class BookDaoImpl implements BookDao {
 		}
 	}
 	
- 
-	@Override
-	public int update(UserDto userDto) throws SQLException {
-		return 0;
-	}
- 
-	@Override
-	public int delete(UserDto userDto) throws SQLException {
-		return 0;
-	}
-	//단건조회
- 
-	@Override
-	public UserDto select(UserDto userDto) {	
-		return null;
-	}
-	//다건조회
- 
-	@Override
-	public List<UserDto> selectAll() {	
-		return null;
-	}
-	
-	public int bookCount(String input) throws Exception {
+	public int bookCount(String input, String type) throws Exception {
 		
 		connectionItem = connectionPool.getConnection();
 		Connection conn = connectionItem.getConn();
 		
-		pstmt = conn.prepareStatement("select count(*) as Count from book_tbl where bookName like ?");
+		pstmt = conn.prepareStatement("select count(*) as Count from book_tbl where "+type+" like ?");
 		pstmt.setString(1, "%"+input+"%");
 		rs = pstmt.executeQuery();
 		rs.next();
@@ -113,7 +90,7 @@ public class BookDaoImpl implements BookDao {
 		return result;
 	}
 
-	public List<BookDto> selectAllBookPage(int pageNum, String sortBy, String orderBy, String input) throws Exception {
+	public List<BookDto> selectAllBookPage(int pageNum, String sortBy, String orderBy,String type ,String input) throws Exception {
 		
 		connectionItem = connectionPool.getConnection();
 		Connection conn = connectionItem.getConn();
@@ -122,7 +99,9 @@ public class BookDaoImpl implements BookDao {
 				"SELECT ROW_NUMBER() OVER (ORDER BY "
 				+ sortBy
 				+ " " + orderBy
-				+ ") AS num, t.* FROM book_tbl t where bookName like ? limit ?,10");
+				+ ") AS num, t.* FROM book_tbl t where "
+				+ type
+				+ " like ? limit ?,10");
 		pstmt.setString(1, "%"+input+"%");
 		pstmt.setInt(2, (pageNum - 1) * 10);
 		rs = pstmt.executeQuery();
@@ -141,6 +120,71 @@ public class BookDaoImpl implements BookDao {
 		
 		
 		return bookDtos;
+	}
+	@Override
+	public BookDto select(String bookCode) throws Exception {
+		connectionItem = connectionPool.getConnection();
+		Connection conn = connectionItem.getConn();
+		
+		pstmt = conn.prepareStatement("select * from book_tbl where bookCode = ?");
+		pstmt.setString(1, bookCode);
+		
+		rs = pstmt.executeQuery();
+		if (!rs.isBeforeFirst()) {
+			return null;
+		}
+		rs.next();
+		BookDto bookDto = new BookDto(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4));
+		
+		connectionPool.releaseConnection(connectionItem);
+		
+		return bookDto;
+	}
+	
+	@Override
+	public int update(BookDto bookDto) throws Exception {
+		try {
+			//connection  get
+			connectionItem = connectionPool.getConnection();
+			Connection conn = connectionItem.getConn();
+			
+			pstmt = conn.prepareStatement("update book_tbl set bookName = ?, publisher = ?, isbn = ? where bookCode = ?");
+			pstmt.setString(1, bookDto.getBookName());
+			pstmt.setString(2, bookDto.getPublisher());
+			pstmt.setString(3, bookDto.getIsbn());
+			pstmt.setString(4, bookDto.getBookCode());
+			
+			//connection release
+			connectionPool.releaseConnection(connectionItem);
+			
+			return pstmt.executeUpdate();
+			
+		}catch(SQLException e) {
+			return 0;
+		}finally {
+			try {pstmt.close();}catch(Exception e2) {}
+		}
+	}
+	@Override
+	public int delete(String bookCode) throws Exception {
+		try {
+			//connection  get
+			connectionItem = connectionPool.getConnection();
+			Connection conn = connectionItem.getConn();
+			
+			pstmt = conn.prepareStatement("delete from book_tbl where bookCode = ?");
+			pstmt.setString(1, bookCode);
+			
+			//connection release
+			connectionPool.releaseConnection(connectionItem);
+			
+			return pstmt.executeUpdate();
+			
+		}catch(SQLException e) {
+			return 0;
+		}finally {
+			try {pstmt.close();}catch(Exception e2) {}
+		}
 	}
 }
 

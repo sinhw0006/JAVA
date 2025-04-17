@@ -16,8 +16,27 @@
 	color: red;
 }
 
+table {
+	min-width: 900px;
+}
+
 td {
-	
+	white-space: nowrap;
+	text-align: center;
+	height: 50px;
+	width: 120px;
+	max-width: 120px;
+	overflow: hidden;
+}
+
+.max-td1 {
+	width: 400px;
+	min-width: 400px;
+	max-width: 400px;
+}
+
+.max-td2 {
+	width: 50px;
 }
 </style>
 </head>
@@ -31,12 +50,47 @@ td {
 			<%@include file="/resources/layouts/nav.jsp"%>
 		</header>
 		<main class="layout">
-			BookCount :
-			<%=request.getAttribute("bookCount")%> / <%=session.getAttribute("orderBy") %> / <%=session.getAttribute("sortBy") %> / <%=session.getAttribute("input") %>
-			
+			<div style="display: flex; justify-content: space-between;">
+				<form class="d-flex"
+					action="${pageContext.request.contextPath}/book/list">
+					<input class="form-controle me-2" type="text" name="page">
+					<button class="btn btn-outline-success">페이지 이동</button>
+				</form>
+				<div>
+					<form class="d-flex"
+						action="${pageContext.request.contextPath}/book/list">
+						<select name="sortBy">
+							<option>bookCode</option>
+							<option>bookName</option>
+							<option>publisher</option>
+							<option>isbn</option>
+						</select> <select name="orderBy">
+							<option>ASC</option>
+							<option>DESC</option>
+						</select>
+						<button class="btn btn-outline-success">정렬</button>
+					</form>
+				</div>
+			</div>
+			<%
+			int pageCount = (int) request.getAttribute("pageCount");
+			int pages = (int)request.getAttribute("page");
+			List<BookDto> bookdtos = (List<BookDto>) request.getAttribute("books");
+			int i = (pages - 1) * 10;
+			%>
 			<div
 				style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-				<h1>BookList</h1>
+				<h1>BookList(${page} / ${pageCount})</h1>
+				검색 갯수 :
+				<%=request.getAttribute("bookCount")%>
+				/ 정렬 기준 :
+				<%=session.getAttribute("sortBy")%>
+				/ 정렬 순서 :
+				<%=session.getAttribute("orderBy")%>
+				/ 검색 기준 :
+				<%=session.getAttribute("type")%>
+				/ 검색어 :
+				<%=session.getAttribute("input")%>
 				<table class="table">
 					<thead>
 						<tr>
@@ -46,27 +100,22 @@ td {
 							<td>출판사</td>
 							<td colspan="2">ISBN</td>
 							<td></td>
-							<td></td>
 						</tr>
 					</thead>
 					<tbody>
 						<%
-						int pageCount = (int) request.getAttribute("pageCount");
-						int pages = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-						List<BookDto> bookdtos = (List<BookDto>) request.getAttribute("books");
-						int i = (pages - 1) * 10;
 						for (BookDto bookdto : bookdtos) {
 							i++;
 						%>
 						<tr>
 							<td><%=i%></td>
 							<td><%=bookdto.getBookCode()%></td>
-							<td><%=bookdto.getBookName()%></td>
+							<td class="max-td1"><a
+								href="./read?bookCode=<%=bookdto.getBookCode()%>&page=<%=pages%>"><%=bookdto.getBookName()%></a></td>
 							<td><%=bookdto.getPublisher()%></td>
 							<td colspan="2"><%=bookdto.getIsbn()%></td>
-							<td><a href="./book/read?userid=<%=bookdto.getBookCode()%>">수정</a></td>
-							<td><a
-								href="./book/delete?userid=<%=bookdto.getBookCode()%>">삭제</a></td>
+							<td class="max-td2"><a
+								href="./delete?bookCode=<%=bookdto.getBookCode()%>&page=<%=pages%>">삭제</a></td>
 						</tr>
 						<%
 						}
@@ -80,13 +129,12 @@ td {
 							<td>-</td>
 							<td colspan="2">-</td>
 							<td>-</td>
-							<td>-</td>
 						</tr>
 						<%
 						}
 						i = 0;
 						%>
-						<td colspan="3" , style="max-width: 50px">
+						<td colspan="3" , style="max-width: 50px; text-align: left;">
 							<%
 							if (pages != 1) {
 							%> <a href="?page=<%=pages - 1%>">◀</a> <%
@@ -121,33 +169,14 @@ td {
  }
  %>
 						</td>
-						<td colspan="2"></td>
-						<td colspan="3" style="text-align: right;"><a
-							href="${pageContext.request.contextPath}/book/create">도서등록</a> <a
-							href="${pageContext.request.contextPath}/">처음으로</a></td>
+						<td colspan="1"></td>
+						<td colspan="3" style="text-align: right;">
+						<a class="btn btn-success" href="${pageContext.request.contextPath}/book/create">도서등록</a>
+						<a class="btn btn-secondary" href="${pageContext.request.contextPath}/">처음으로</a></td>
 					</tbody>
 				</table>
 
 			</div>
-
-			<form action="${pageContext.request.contextPath}/book/list">
-				<input type="text" name="page">
-				<button>페이지 이동</button>
-			</form>
-			<form action="${pageContext.request.contextPath}/book/list">
-				<select name = "orderBy">
-				<option>ASC</option>
-				<option>DESC</option>
-				</select>
-				<select name = "sortBy">
-				<option>bookCode</option>
-				<option>bookName</option>
-				<option>publisher</option>
-				<option>isbn</option>
-				</select>
-				<input type="text" name="input">
-				<button>검색</button>
-			</form>
 		</main>
 
 
