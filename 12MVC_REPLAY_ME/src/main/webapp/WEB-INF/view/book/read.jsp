@@ -5,11 +5,20 @@
 <head>
 <!-- link -->
 <%@include file="/resources/layouts/link.jsp"%>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/book/read.css">
-<script src="${pageContext.request.contextPath}/resources/js/book/read.js" defer></script>
 
+<script type="text/javascript">
+	const path = '${pageContext.request.contextPath}';
+	const bookCode = '${param.bookCode}';
+</script>
+
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/book/read.css">
+<script
+	src="${pageContext.request.contextPath}/resources/js/book/read.js"
+	defer></script>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title class="${pageContext.request.contextPath}">Insert title
+	here</title>
 <style type="text/css">
 label {
 	width: 80px;
@@ -57,41 +66,30 @@ label {
 				</div>
 			</form>
 
+			<!--  -->
 			<div class="reply-container">
 				<div class="reply-header">
 					<div>
-						댓글수 : <span>00</span>
+						댓글수 : <span class="reply-cnt">00</span>
 					</div>
-					<hr />
+					<hr>
 					<div>
-						<textarea name="" id="" rows="5" cols="30"></textarea>
-						<a class="replay-add-btn btn btn-success"
-							href="javascript:void(0)">입력</a>
+						<textarea name="" id="" cols="30" rows="5"></textarea>
+						<a class="reply-add-btn btn btn-success" href="javascript:void(0)">입력</a>
 					</div>
 				</div>
 				<div class="reply-body">
 					<div class="items">
-						<div class="item">
-							<div class="left">
-								<div>profileImage</div>
-								<div>userName</div>
-							</div>
-							<div class="right">
-								<div class="date">2025-01-01</div>
-								<div class="content">
-									<textarea name="" id="" rows="5" cols="30"></textarea>
-								</div>
-								<div class="button-group"></div>
-							</div>
-						</div>
 					</div>
 				</div>
+
 			</div>
 
 		</main>
 		<!-- footer -->
 		<%@include file="/resources/layouts/footer.jsp"%>
 	</div>
+
 
 </body>
 </html>

@@ -34,10 +34,12 @@ public class PermissionFilter implements Filter{
 		pageGradeMap.put("/user/manager",Role.ROLE_MANAGER);
 		pageGradeMap.put("/user/user",Role.ROLE_USER);
 		pageGradeMap.put("/book/create",Role.ROLE_MANAGER);
-		pageGradeMap.put("/book/read",Role.ROLE_USER);
+		pageGradeMap.put("/book/read",Role.ROLE_ANONYMOUS);
 		pageGradeMap.put("/book/list",Role.ROLE_ANONYMOUS);
 		pageGradeMap.put("/book/delete",Role.ROLE_MANAGER);
 		pageGradeMap.put("/book/update",Role.ROLE_MANAGER);
+		pageGradeMap.put("/book/reply/create",Role.ROLE_USER);
+		pageGradeMap.put("/book/reply/list",Role.ROLE_ANONYMOUS);
 		
 	}
 
